@@ -22,7 +22,21 @@ const thoughtController = {
                 res.sendStatus(400);
             });
     },
-
+    
+    addThought({ params, body }, res) {
+        console.log(params);
+        Thought.create(body)
+            .then(dbThoughtData => {
+                User.findOneAndUpdate(
+                    { _id: params.userId },
+                    { $push: { thoughts: dbThoughtData._id } },
+                    { new: true, runValidators: true }
+                )
+                console.log(dbThoughtData);
+                res.json(dbThoughtData);
+            })
+            .catch(err => res.json(err));
+    },
 
 };
 
