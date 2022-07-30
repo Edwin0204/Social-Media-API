@@ -70,6 +70,26 @@ const thoughtController = {
             .catch(err => res.json(err));
     },
 
+    removeThought({ params }, res) {
+        Thought.findOneAndDelete({ _id: params.thoughtId })
+            .then(deletedThought => {
+                if (!deletedThought) {
+                    return res.status(404).json({ message: 'Information not found' });
+                }
+            })
+            .catch(err => res.json(err));
+    },
+    
+    removeReaction({ params }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $pull: { reactions: { reactionId: params.reactionId } } },
+            { new: true }
+        )
+            .then(dbThoughtData => res.json(dbThoughtData))
+            .catch(err => res.json(err));
+    }
+
 };
 
 module.exports = thoughtController;
