@@ -22,7 +22,7 @@ const thoughtController = {
                 res.sendStatus(400);
             });
     },
-    
+
     addThought({ params, body }, res) {
         console.log(params);
         Thought.create(body)
@@ -33,6 +33,22 @@ const thoughtController = {
                     { new: true, runValidators: true }
                 )
                 console.log(dbThoughtData);
+                res.json(dbThoughtData);
+            })
+            .catch(err => res.json(err));
+    },
+
+    addReaction({ params, body }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $push: { reactions: body } },
+            { new: true, runValidators: true }
+        )
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
+                    res.status(404).json({ message: 'Information not found' });
+                    return;
+                }
                 res.json(dbThoughtData);
             })
             .catch(err => res.json(err));
